@@ -1,0 +1,3 @@
+smolscript/build/
+*.o
+smolscript/smolc
