@@ -113,7 +113,7 @@ rule_t Parser::parseRule() {
 
   rule.command.name = expect(lexem_type::identifier).name;
   while (current.type == lexem_type::integer) {
-    rule.command.args.push_back((char)std::stoi(current.name));
+    rule.command.args.push_back(std::stoi(current.name));
     advance();
   }
   return rule;

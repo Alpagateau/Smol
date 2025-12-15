@@ -1,5 +1,6 @@
 #include "binaries.hpp"
 #include "format.hpp"
+#include <iterator>
 #include <stdexcept>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -39,13 +40,24 @@ std::vector<unsigned char> compile_rules(program_t prgm) {
       }
     }
 
-    if(idx < 0)
+    if (idx < 0)
       throw std::runtime_error("Unknown command");
-    if(known_commands[idx].arg_num != current_rule.command.args.size())
+    if (known_commands[idx].arg_num != current_rule.command.args.size())
       throw std::runtime_error("Incorrect number of args");
 
-    com_code = (unsigned char)idx;    
+    com_code = (unsigned char)idx;
+    compiled.push_back(com_code);
+    for(int j = 0; j < current_rule.command.args.size(); j++)
+    {
+      unsigned int* uvalue = (unsigned int*)&current_rule.command.args[j];
+      unsigned int new_value = *uvalue;
+      compiled.push_back( (new_value & 0xFF000000u) >> 24);
+      compiled.push_back( (new_value & 0x00FF0000u) >> 16);
+      compiled.push_back( (new_value & 0x0000FF00u) >> 8 );
+      compiled.push_back( (new_value & 0x000000FFu) >> 0 );
+    }
   }
-
   return compiled;
 }
+
+
