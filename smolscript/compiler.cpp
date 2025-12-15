@@ -1,4 +1,5 @@
 #include "compiler.hpp"
+#include "binaries.hpp"
 #include <cctype>
 #include <fstream>
 #include <iostream>
@@ -112,7 +113,7 @@ rule_t Parser::parseRule() {
 
   rule.command.name = expect(lexem_type::identifier).name;
   while (current.type == lexem_type::integer) {
-    rule.command.args.push_back(std::stoi(current.name));
+    rule.command.args.push_back((char)std::stoi(current.name));
     advance();
   }
   return rule;
@@ -145,11 +146,11 @@ program_t Parser::parseProgram() {
   return prgm;
 }
 
-void compile_file(std::string path) {
+program_t compile_file(std::string path) {
   std::ifstream source_file(path);
   if (source_file.fail()) {
     std::cout << "[ERROR] Couldn't open file : " << path << std::endl;
-    return;
+    return {};
   }
 
   std::cout << "reading file : " << path << std::endl;
@@ -159,4 +160,5 @@ void compile_file(std::string path) {
   Lexer lexer(buffer.str());
   Parser parser(lexer);
   auto program = parser.parseProgram();
+  return program; 
 }

@@ -93,6 +93,6 @@ private:
 };
 
 //API
-void compile_file(std::string path);
+program_t compile_file(std::string path);
 
 #endif
