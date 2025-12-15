@@ -35,7 +35,7 @@ lexem Lexer::identifier() {
 
 lexem Lexer::number() {
   unsigned int start = pos;
-  while (pos < src.size() && std::isdigit(src[pos]))
+  while (pos < src.size() && (std::isdigit(src[pos]) || src[pos] == '-' || src[pos] == '+'))
     pos++;
   return {lexem_type::integer, src.substr(start, pos - start)};
 }
@@ -59,7 +59,7 @@ lexem Lexer::next() {
     return {lexem_type::kw_arrow, "=>"};
   }
 
-  if (isdigit(c)) {
+  if (isdigit(c) || c == '-' || c == '+') {
     return number();
   }
 
