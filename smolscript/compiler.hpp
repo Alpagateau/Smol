@@ -11,6 +11,7 @@ enum class lexem_type
   kw_arrow,
   kw_bang,
   kw_semicolon,
+  kw_load,
   identifier,
   integer,
   end_of_file
@@ -58,6 +59,17 @@ struct rule_t
   command_t command;
 };
 
+struct load_t 
+{
+  std::string path;
+};
+
+struct program_t
+{
+  load_t load;
+  std::vector<rule_t> rules;
+};
+
 class Parser
 {
 public:
@@ -66,6 +78,8 @@ public:
         advance();
   }
   rule_t parseRule();
+  load_t parseLoad();
+  program_t parseProgram();
 private:
   Lexer& lexer;
   lexem current;
