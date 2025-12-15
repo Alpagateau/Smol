@@ -4,6 +4,6 @@
 #include "compiler.hpp"
 #include "format.hpp"
 
-
+std::vector<unsigned char> compile_rules(program_t prgm);
 
 #endif

@@ -24,7 +24,25 @@ struct object_t
   std::vector<unsigned char> commands;
 };
 
-extern std::vector<Color> palette;
-extern std::vector<func> known_commands;
+static std::vector<Color> palette = 
+{
+  {0x00, 0x00, 0x00, 0x00},
+  {0x00, 0x00, 0x00, 0xFF},
+  {0xFF, 0xFF, 0xFF, 0xFF},
+  {0xFF, 0x00, 0x00, 0xFF},
+  {0x00, 0xFF, 0x00, 0xFF},
+  {0x00, 0x00, 0xFF, 0xFF}
+};
+
+static std::vector<func> known_commands = 
+{
+  {"move", 2},
+  {"exit", 0}
+};
+
+static std::vector<std::string> known_variables = 
+{
+  "always"
+};
 
 #endif
