@@ -13,9 +13,11 @@ int main(int argc, char **argv) {
     }
     // std::cout << "Got : " << programs.size() << " agents" << std::endl;
     for (int p = 0; p < programs.size(); p++) {
+      std::vector<unsigned char> img   = compiled_image(programs[p]);
       std::vector<unsigned char> bytes = compile_rules(programs[p]);
+      img.insert(img.end(), bytes.begin(), bytes.end());
       std::ofstream output("obj.obj");
-      output.write((const char*)&bytes[0], bytes.size());
+      output.write((const char*)&img[0], img.size());
     }
   }
 

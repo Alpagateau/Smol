@@ -1,8 +1,7 @@
-load image.png
+load test.png
 
 #this is a comment#
 when always => move -1 1
 #This is also a comment
 when always! => move 1 0
-when A! => move 0 10
-when !A! => move 0 -10
+#when A! => move 0 10 when !A! => move 0 -10
