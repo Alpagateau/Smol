@@ -31,7 +31,25 @@ bool accept(struct parser* p, enum lexem_type type)
 
 struct condition parse_condition(struct parser* p)
 {
+
   struct condition cond;
+  if(p->last_token.type == KW_TRUE)
+  {
+    cond.constant = true;
+    cond.inverted = false;
+    cond.edge = false;
+    advance(p);
+    return cond;
+  }
+  else if(p->last_token.type == KW_FALSE)
+  {
+    cond.constant = true;
+    cond.inverted = true;
+    cond.edge = false;
+    advance(p);
+    return cond;
+  }
+
   cond.inverted = accept(p, KW_BANG);
   expect(p, LIT_STR);
   strcpy(cond.name, p->last_token.identifier);
@@ -49,6 +67,7 @@ struct setter parse_setter(struct parser *p)
   strcpy(s.dest, p->last_token.identifier);
   advance(p);
   s.value = parse_condition(p);
+  //advance(p);
   return s;
 }
 
@@ -82,7 +101,6 @@ struct rule parse_rule(struct parser *p)
   r.condition = parse_condition(p);
   expect(p, KW_ARROW);
   advance(p);
-  printf("[DEBUG] type : %d\n", p->last_token.type);
   if(p->last_token.type == KW_SET)
   {
     r.is_setter = true;
@@ -94,6 +112,47 @@ struct rule parse_rule(struct parser *p)
     r.command = parse_command(p);
   }
   return r;
+}
+
+struct image parse_image(struct parser *p)
+{
+  struct image img;
+  expect(p, KW_IMAGE);
+  advance(p);
+  expect(p, LIT_STR);
+  strcpy(img.name, p->last_token.identifier);
+  advance(p);
+  expect(p, LIT_IMG);
+  memcpy(img.pxl, p->last_token.img, 16*16);
+  advance(p);
+  return img;
+}
+
+struct program parse_program(struct parser* p)
+{
+  struct program prgm = {}; 
+
+  while(p->last_token.type != KW_EOF) 
+  {  
+    switch (p->last_token.type) {
+      case KW_IMAGE:
+        prgm.images[prgm.img_nb++] = parse_image(p);
+        break;
+      case KW_WHEN:
+        prgm.rules[prgm.rule_nb++] = parse_rule(p);
+        printf("[DEBUG] Condition %s => is setter : %d\n", 
+               prgm.rules[prgm.rule_nb-1].condition.name,
+               prgm.rules[prgm.rule_nb-1].is_setter
+               );
+        if(p->last_token.type == LIT_STR)
+          printf("[DEBUG] String lit : %s at : %d %d\n", p->last_token.identifier, p->last_token.line, p->last_token.chr);
+        break;
+      default:
+        //printf("What am i parsing ? %d\n", p->last_token.type);
+        break;
+    }
+  }
+  return prgm;
 }
 
 void print_rule(struct rule r)

@@ -19,6 +19,9 @@ struct condition parse_condition(struct parser* p);
 struct setter parse_setter(struct parser* p);
 struct command parse_command(struct parser* p);
 struct rule parse_rule(struct parser* p);
+struct image parse_image(struct parser* p);
+
+struct program parse_program(struct parser* p);
 
 void print_rule(struct rule r);
 

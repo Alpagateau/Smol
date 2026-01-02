@@ -9,6 +9,14 @@
 #define MAX_ARG_NUM 10
 #endif
 
+#ifndef MAX_RULE_NUM
+#define MAX_RULE_NUM 255
+#endif
+
+#ifndef MAX_IMG_NUM
+#define MAX_IMG_NUM 16
+#endif
+
 #include <stdbool.h>
 
 struct condition
@@ -16,6 +24,7 @@ struct condition
   char name[STR_LEN];
   bool edge;
   bool inverted;
+  bool constant;
 };
 
 struct command
@@ -39,6 +48,28 @@ struct rule
     struct setter setter;
     struct command command;
   };
+};
+
+struct image
+{
+  char name[STR_LEN];
+  char pxl[16*16];
+};
+
+struct agent
+{
+  int gfx_index; 
+  short x;
+  short y;
+};
+
+struct program
+{
+  int img_nb;
+  int rule_nb;
+  int agent_nb;
+  struct image images[MAX_IMG_NUM];
+  struct rule rules[MAX_RULE_NUM];
 };
 
 #endif

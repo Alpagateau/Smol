@@ -74,7 +74,6 @@ struct token next_token(struct lexer* l)
     }
     else 
     {
-      printf("[ERROR] Lexed \'=\' but no \'>\' \n");
       return (struct token){.type = LEX_ERR};
     }
   }
@@ -86,6 +85,11 @@ struct token next_token(struct lexer* l)
 
   if(isdigit(c) || c == '-' || c == '+')
   {
+    int is_img = 0;
+    long pos = ftell(l->src);
+    struct token img = lex_img(l, &is_img);
+    if(is_img == 1) return img;
+    fseek(l->src, pos, SEEK_SET);
     return lex_int(l);
   }
 
@@ -100,7 +104,7 @@ struct token lex_str(struct lexer* l)
   int len = 0;  
   while(
     (len < STR_LEN) && 
-    (isalpha(c) || isdigit(c))
+    (isalpha(c) || isdigit(c) || c == '_')
   )
   {
     str[len++] = c;
@@ -130,6 +134,18 @@ struct token lex_str(struct lexer* l)
   {
     t.type = KW_SET;
   }
+  else if(strcmp(str, "define") == 0)
+  {
+    t.type = KW_DEFINE;
+  }
+  else if(strcmp(str, "load") == 0)
+  {
+    t.type = KW_LOAD;
+  }
+  else if(strcmp(str, "image") == 0)
+  {
+    t.type = KW_IMAGE;
+  }
   else 
   {
     t.type = LIT_STR;
@@ -141,15 +157,14 @@ struct token lex_int(struct lexer* l)
 {
   char str[STR_LEN] = {};
   int len = 0;
-  char c = consume(l);
-  do 
+  if(peek(l) == '-' || peek(l) == '+')
   {
-    str[len++] = c;
-    c = consume(l);
+    str[len++] = consume(l);
   }
-  while(isdigit(c));
-
-  //printf("[DEBUG] Reading int : %s\n", str);
+  while(isdigit( peek(l) ))
+  {
+    str[len++] = consume(l);
+  }
   return (struct token)
     {
       .type = LIT_NUM,
@@ -157,6 +172,34 @@ struct token lex_int(struct lexer* l)
       .line = l->line_pos,
       .value = atoi(str)
     };
+}
+
+struct token lex_img(struct lexer *l, int* success)
+{
+  struct token img;
+  img.line = l->line_pos;
+  img.chr = l->char_pos;
+  img.type = LIT_IMG;
+  
+  *success = 1;
+
+  for(int i = 0; i < 16*16; i++)
+  {
+    skipSpace(l);
+    int c = consume(l);
+    if(!isdigit(c) && c != '.')
+    {
+      img.type = LEX_ERR; 
+      *success = 0;
+      return img;
+    }
+    else 
+    { 
+      img.img[i] = (c == '.' ? 0 : c - '0');
+    }
+  }
+
+  return img;
 }
 
 void print_token(struct token t)

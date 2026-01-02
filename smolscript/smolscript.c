@@ -1,7 +1,9 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 #include "lexer.h"
 #include "parser.h"
+#include <string.h>
 
 int main(int argc, char **argv)
 {
@@ -19,10 +21,20 @@ int main(int argc, char **argv)
   if(lexer.src == NULL)
     return 1;
 
-  while(parser.last_token.type != KW_EOF)
-  {
-    struct rule r = parse_rule(&parser);
-    print_rule(r);
-  }
+  struct program p = parse_program(&parser);
+
+  char new_name[STR_LEN] = {};
+  strcpy(new_name, argv[1]);
+  char* dot = strrchr(new_name, '.');
+  if(!dot)
+    dot = new_name + strlen(new_name);
+
+  strcpy(dot, ".rsmol");
+  FILE* output = fopen(new_name, "wb");
+  
+  fwrite(&p, sizeof(struct program), 1, output);
+
+  fclose(lexer.src); 
+  fclose(output);
   return 0;
 }

@@ -13,8 +13,12 @@ enum lexem_type
   KW_TRUE,
   KW_FALSE,
   KW_SET,
+  KW_DEFINE,
+  KW_IMAGE,
+  KW_LOAD,
   LIT_NUM,
   LIT_STR,
+  LIT_IMG,
   LEX_ERR,
   KW_EOF
 };
@@ -32,6 +36,7 @@ struct token
   enum lexem_type type;
   union{
     char identifier[STR_LEN];
+    char img[16*16];
     int value;
   };
   int line;
@@ -48,6 +53,7 @@ void skipSpace(struct lexer* l);
 struct token next_token(struct lexer* l);
 struct token lex_str(struct lexer* l);
 struct token lex_int(struct lexer* l);
+struct token lex_img(struct lexer* l, int* success);
 
 void print_token(struct token t);
 
