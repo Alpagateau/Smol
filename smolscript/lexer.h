@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define STR_LEN 255
+#include "../smol.h"
 
 enum lexem_type 
 {
@@ -15,7 +15,7 @@ enum lexem_type
   KW_SET,
   KW_DEFINE,
   KW_IMAGE,
-  KW_LOAD,
+  KW_SPRITE,
   LIT_NUM,
   LIT_STR,
   LIT_IMG,

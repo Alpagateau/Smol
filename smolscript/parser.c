@@ -1,7 +1,10 @@
 #include "lexer.h"
+#include <linux/limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include "parser.h"
+
+#define DEBUG
 
 void init_parser(struct parser* p, struct lexer* l)
 {
@@ -23,7 +26,7 @@ bool accept(struct parser* p, enum lexem_type type)
 {
   if(p->last_token.type == type)
   {
-    advance(p);
+  advance(p);
     return true;
   }
   return false;
@@ -31,7 +34,9 @@ bool accept(struct parser* p, enum lexem_type type)
 
 struct condition parse_condition(struct parser* p)
 {
-
+  #ifdef DEBUG
+    printf("[DEBUG] Condition\n");
+  #endif
   struct condition cond;
   if(p->last_token.type == KW_TRUE)
   {
@@ -60,6 +65,9 @@ struct condition parse_condition(struct parser* p)
 
 struct setter parse_setter(struct parser *p)
 {
+  #ifdef DEBUG
+    printf("[DEBUG] Setter\n");
+  #endif
   struct setter s;
   expect(p, KW_SET);
   advance(p);
@@ -73,16 +81,34 @@ struct setter parse_setter(struct parser *p)
 
 struct command parse_command(struct parser* p)
 {
+  #ifdef DEBUG
+    printf("[DEBUG] Command\n");
+  #endif
   struct command c;
   expect(p, LIT_STR);
   strcpy(c.name, p->last_token.identifier); 
   advance(p);
   c.arg_num = 0;
-  while(p->last_token.type == LIT_NUM)
+  while(
+    p->last_token.type == LIT_NUM || 
+    p->last_token.type == LIT_STR
+  )
   {
-    c.args[c.arg_num++] = p->last_token.value;
-    advance(p);
+    #ifdef DEBUG
+      printf(
+        "[DEBUG] args Next token type :  %d\n", 
+        p->last_token.type
+      );
+    #endif
+    c.args[c.arg_num++] = parse_argument(p);
   }
+
+  #ifdef DEBUG
+      printf(
+        "[DEBUG] Next token type after : %d\n", 
+        p->last_token.type
+      );
+    #endif
 
   return c;
 }
@@ -94,6 +120,9 @@ void advance(struct parser* p)
 
 struct rule parse_rule(struct parser *p)
 {
+  #ifdef DEBUG
+    printf("[DEBUG] Rule\n");
+  #endif
   struct rule r;
  
   expect(p, KW_WHEN);
@@ -116,6 +145,9 @@ struct rule parse_rule(struct parser *p)
 
 struct image parse_image(struct parser *p)
 {
+  #ifdef DEBUG
+    printf("[DEBUG] Image\n");
+  #endif
   struct image img;
   expect(p, KW_IMAGE);
   advance(p);
@@ -130,13 +162,41 @@ struct image parse_image(struct parser *p)
 
 struct program parse_program(struct parser* p)
 {
+  #ifdef DEBUG
+    printf("[DEBUG] Program\n");
+  #endif
   struct program prgm = {}; 
 
   while(p->last_token.type != KW_EOF) 
   {  
+    #ifdef DEBUG
+      printf("[DEBUG] Next token type : %d\n", p->last_token.type);
+    #endif
     switch (p->last_token.type) {
       case KW_IMAGE:
         prgm.images[prgm.img_nb++] = parse_image(p);
+        break;
+      case KW_DEFINE:
+        {
+          struct definer d = parse_definer(p);
+          if(strcmp(d.name, "agents") == 0)
+          {
+            prgm.agent_nb = d.value;
+            printf("Number of agents : %d\n", d.value);
+          }
+          break;
+        }
+      case KW_SPRITE:
+        #ifdef DEBUG
+          printf("[DEBUG] Sprite\n");
+        #endif
+        advance(p);
+        expect(p, LIT_STR);
+        strcpy(
+          prgm.agents[prgm.agent_nb++], 
+          p->last_token.identifier
+        );
+        advance(p);
         break;
       case KW_WHEN:
         prgm.rules[prgm.rule_nb++] = parse_rule(p);
@@ -147,12 +207,61 @@ struct program parse_program(struct parser* p)
         if(p->last_token.type == LIT_STR)
           printf("[DEBUG] String lit : %s at : %d %d\n", p->last_token.identifier, p->last_token.line, p->last_token.chr);
         break;
+      case KW_EOF:
+        break;
       default:
         //printf("What am i parsing ? %d\n", p->last_token.type);
         break;
     }
   }
   return prgm;
+}
+
+struct definer parse_definer(struct parser* p)
+{
+  #ifdef DEBUG
+    printf("[DEBUG] Definer\n");
+  #endif
+  expect(p, KW_DEFINE);
+  advance(p);
+
+  struct definer d = {};
+
+  expect(p, LIT_STR);
+  strcpy(d.name, p->last_token.identifier);
+  advance(p);
+    
+  expect(p, LIT_NUM);
+  d.value = p->last_token.value;
+  advance(p);
+  return d;
+}
+
+struct argument parse_argument(struct parser *p)
+{
+  #ifdef DEBUG
+    printf("[DEBUG] Argument\n");
+  #endif
+  struct argument a = {};
+  if(p->last_token.type == LIT_STR)
+  {
+    a.agr_type = ARG_STR;
+    strcpy(a.name, p->last_token.identifier);
+    #ifdef DEBUG
+      printf("[DEBUG] Read arg %s\n", a.name);
+    #endif
+  }
+  else
+  {
+    expect(p, LIT_NUM);
+    a.agr_type = ARG_INT;
+    a.value = p->last_token.value;
+    #ifdef DEBUG
+      printf("[DEBUG] Read arg num %d\n", a.value);
+    #endif
+  }
+  advance(p);
+  return a;
 }
 
 void print_rule(struct rule r)
@@ -164,5 +273,4 @@ void print_rule(struct rule r)
            r.setter.dest, r.setter.value.name, r.setter.value.edge, r.setter.value.inverted);
   else
     printf(" command %s with %d args\n", r.command.name, r.command.arg_num);
-
 }

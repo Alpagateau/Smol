@@ -137,10 +137,10 @@ struct token lex_str(struct lexer* l)
   else if(strcmp(str, "define") == 0)
   {
     t.type = KW_DEFINE;
-  }
-  else if(strcmp(str, "load") == 0)
+  } 
+  else if(strcmp(str, "sprite") == 0)
   {
-    t.type = KW_LOAD;
+    t.type = KW_SPRITE;
   }
   else if(strcmp(str, "image") == 0)
   {
@@ -165,6 +165,9 @@ struct token lex_int(struct lexer* l)
   {
     str[len++] = consume(l);
   }
+  #ifdef DEBUG
+    printf("[DEBUG] str \"%s\"\n", str);
+  #endif
   return (struct token)
     {
       .type = LIT_NUM,

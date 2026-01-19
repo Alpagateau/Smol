@@ -20,6 +20,8 @@ struct setter parse_setter(struct parser* p);
 struct command parse_command(struct parser* p);
 struct rule parse_rule(struct parser* p);
 struct image parse_image(struct parser* p);
+struct argument parse_argument(struct parser* p);
+struct definer parse_definer(struct parser* p);
 
 struct program parse_program(struct parser* p);
 

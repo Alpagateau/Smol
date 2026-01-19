@@ -1,9 +1,10 @@
-#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include "lexer.h"
 #include "parser.h"
 #include <string.h>
+
+#define DEBUG
 
 int main(int argc, char **argv)
 {
@@ -23,7 +24,7 @@ int main(int argc, char **argv)
 
   struct program p = parse_program(&parser);
 
-  char new_name[STR_LEN] = {};
+  char new_name[STR_LEN] = {0};
   strcpy(new_name, argv[1]);
   char* dot = strrchr(new_name, '.');
   if(!dot)
