@@ -7,3 +7,12 @@ Smol is a simple "game engine" made for micro games. It's goal is to be so simpl
 => smolscript : a very simple language to define the behaviour of the game. It compiles dot smol files. 
 Those files contains the graphics and the logic of each games.
 => smollib : a library for reading, decoding, and playing smol files. It provides a number of tools to then implement your own interpreter or compiler.
+
+# Nouvelle idee de language / vm
+
+EXPR := WHEN BOOLEAN => | ACTION
+                        | { ACTION; }
+
+BOOLEAN := BOOL | !BOOL | BOOL! | !BOOL!
+
+BOOL := STR_LIT | BOOLEAN_EXPR 

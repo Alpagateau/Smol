@@ -11,7 +11,7 @@ struct smol_function
 
 struct smol_program compile(
   struct program p, 
-  char** flags, 
+  char flags[][STR_LEN], 
   int flags_num,
   struct smol_function* funcs,
   int func_num

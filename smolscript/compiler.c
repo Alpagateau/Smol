@@ -14,7 +14,7 @@ int number_of_args(struct smol_function f) {
 
 int index_of(char *key, char haysatck[][STR_LEN], int len) {
   for (int i = 0; i < len; i++) {
-    if (strcmp(key, haysatck[i]))
+    if (strcmp(key, haysatck[i])==0)
       return i;
   }
   return -1;
@@ -35,6 +35,7 @@ struct smol_rule compile_rule(
   char sprites[][STR_LEN], int spr_len,
   struct smol_function *funcs, int func_num
   ) {
+
   struct smol_rule sr = {};
   sr.flags = 0;
   if (r.condition.inverted)
@@ -66,6 +67,7 @@ struct smol_rule compile_rule(
            );
     exit(1);
   }
+  sr.arg_nb = r.command.arg_num;
   //Deport args
   for(int i = 0; i < r.command.arg_num; i++)
   {
@@ -101,7 +103,7 @@ struct smol_rule compile_rule(
   return sr;
 }
 
-struct smol_program compile(struct program p, char **flags, int flags_num,
+struct smol_program compile(struct program p, char flags[][STR_LEN], int flags_num,
                             struct smol_function *funcs, int func_num) {
   struct smol_program sp = {};
 
