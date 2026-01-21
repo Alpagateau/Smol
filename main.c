@@ -6,7 +6,10 @@
 int main(int argc, char** argv)
 {
   if(argc == 1)
+  {
+    printf("Usage : %s <file>\n", argv[0]);
     return 1;
+  }
 
   InitWindow(128, 128, "TEST");
 
@@ -19,31 +22,16 @@ int main(int argc, char** argv)
     BLUE
   };
 
-  struct program prg;
+  struct smol_program prg;
   prg = load_program(argv[1]);
 
-  printf("[DEBUG] Number of rules : %d\n", prg.rule_nb);
-  printf("[DEBUG] First rule's condition : %s", prg.rules[0].condition.name);
-
-  Texture images[64] = {};
-  for(int i = 0; i < prg.img_nb; i++)
-  {
-    Image img = GenImageColor(16, 16, WHITE);
-    for(int j = 0; j < 16 * 16; j++)
-    { 
-      ImageDrawPixel(&img, j%16, (j - (j%16))/16, palette[prg.images[i].pxl[j]]);
-    }
-    images[i] = LoadTextureFromImage(img);
-  }
+  printf("[DEBUG] Number of rules : %d\n", prg.rules_nb);
+  printf("[DEBUG] First rule's condition : %d\n", prg.rules[0].condition);
 
   while(!WindowShouldClose())
   {
     BeginDrawing();
       ClearBackground(WHITE);
-      for(int i = 0; i < prg.img_nb; i++)
-      {
-        DrawTextureEx(images[i],(Vector2){ 0, 0}, 0, 2, WHITE);
-      }
     EndDrawing();
   }
   CloseWindow();

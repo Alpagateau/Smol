@@ -4,11 +4,8 @@
 
 int number_of_args(struct smol_function f) {
   int i = 0;
-  for (int s = 0; s < MAX_ARG_NUM; s++) {
-    if (f.args[i] == ARG_NONE)
-      break;
-    i++;
-  }
+  while(i < MAX_ARG_NUM && f.args[i] != ARG_NONE) 
+  {i++;}
   return i;
 }
 
@@ -22,7 +19,8 @@ int index_of(char *key, char haysatck[][STR_LEN], int len) {
 
 int index_of_func(char *key, struct smol_function *haysatck, int len) {
   for (int i = 0; i < len; i++) {
-    if (strcmp(key, haysatck[i].name))
+    printf("[DEBUG] = is %s equal to %s =\n", key, haysatck[i].name);
+    if (strcmp(key, haysatck[i].name) == 0)
       return i;
   }
   return -1;
@@ -54,6 +52,7 @@ struct smol_rule compile_rule(
   }
   sr.condition = condition;
   sr.func = index_of_func(r.command.name, funcs, func_num);
+  printf("[DEBUG] Found function index : %d\n", sr.func);
   if (sr.func < 0) {
     printf("[ERROR] : Unrecognized function : %s\n", r.command.name);
     exit(1);
@@ -107,6 +106,11 @@ struct smol_program compile(struct program p, char flags[][STR_LEN], int flags_n
                             struct smol_function *funcs, int func_num) {
   struct smol_program sp = {};
 
+  for(int i = 0; i < func_num; i++)
+  {
+    printf("[DEBUG] = Loaded function : %s\n", funcs[i].name);
+  }
+
   char image_table[MAX_IMG_NUM][STR_LEN];
   char sprite_table[MAX_AGENTS_NUM][STR_LEN];
   char total_flags[MAX_FLAG_NUM][STR_LEN];
@@ -128,9 +132,10 @@ struct smol_program compile(struct program p, char flags[][STR_LEN], int flags_n
     strcpy(sprite_table[i], p.agents[i]);
   }
 
+  sp.rules_nb = p.rule_nb;
   // Prepare the smol rules
   for (int i = 0; i < p.rule_nb; i++) {
-    sp.rules[sp.rules_nb++] =
+    sp.rules[i] =
         compile_rule(
           p.rules[i], 
           total_flags, &flag_count,

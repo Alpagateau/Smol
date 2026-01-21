@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   struct smol_function sf[] = {
     {
       .name = "move", 
-      .args = {ARG_INT, ARG_INT, ARG_NONE}
+      .args = {ARG_SPR, ARG_INT, ARG_INT, ARG_NONE}
     },
   };
   struct smol_program sp = compile(p, flags, 4, sf, 1);

@@ -3,6 +3,6 @@
 
 #include "../smol.h"
 
-struct program load_program(char* path);
+struct smol_program load_program(char* path);
 
 #endif

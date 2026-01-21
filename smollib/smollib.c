@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include "smollib.h"
 
-struct program load_program(char* path)
+struct smol_program load_program(char* path)
 {
   FILE* file = fopen(path, "rb");
   if(file == NULL)
     exit(1);
-  struct program prgm; 
-  fread(&prgm, sizeof(struct program), 1, file);
+  struct smol_program prgm; 
+  fread(&prgm, sizeof(struct smol_program), 1, file);
   return prgm;
 }
