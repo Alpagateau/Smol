@@ -1,1 +1,2 @@
+sprite ball
 when always => move ball 0 1

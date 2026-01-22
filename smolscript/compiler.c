@@ -70,6 +70,7 @@ struct smol_rule compile_rule(
   //Deport args
   for(int i = 0; i < r.command.arg_num; i++)
   {
+    printf("[DEBUG] : Parsing argument of type : %d\n", i);
     if(funcs[sr.func].args[i] == ARG_INT)
     {
       if(r.command.args[i].agr_type != ARG_INT)
@@ -78,6 +79,7 @@ struct smol_rule compile_rule(
         exit(1);
       }
       sr.args[i] = r.command.args[i].value;
+      printf("[DEBUG] : Int argument : %d\n", sr.args[i]);
     }
     if(funcs[sr.func].args[i] == ARG_IMG)
     {
@@ -87,6 +89,7 @@ struct smol_rule compile_rule(
         exit(1);
       }
       sr.args[i] = index_of(r.command.args[i].name, images, img_len); 
+      printf("[DEBUG] : Image argument : %d\n", sr.args[i]);
     }
     if(funcs[sr.func].args[i] == ARG_SPR)
     {
@@ -96,6 +99,7 @@ struct smol_rule compile_rule(
         exit(1);
       }
       sr.args[i] = index_of(r.command.args[i].name, sprites, spr_len);
+      printf("[DEBUG] : Sprite argument : %d\n", sr.args[i]);
     }
   }
 
@@ -129,6 +133,7 @@ struct smol_program compile(struct program p, char flags[][STR_LEN], int flags_n
   // Prepare the sprite table
   sp.sprite_nb = p.agent_nb;
   for (int i = 0; i < sp.sprite_nb; i++) {
+    printf("[DEBUG] Loading sprite : %s\n", p.agents[i]);
     strcpy(sprite_table[i], p.agents[i]);
   }
 
